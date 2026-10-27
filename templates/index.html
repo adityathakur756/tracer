@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TRACER | Rescue Intelligence</title>
+<style>
+:root{--bg:#07111c;--panel:#0d1c2a;--card:#112536;--line:#20394b;--orange:#ff792f;--cyan:#43d9cb;--text:#edf5fb;--muted:#8fa6b9;--red:#ff656c;--green:#4bdbac}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,Arial,sans-serif}
+button,input,select,textarea{font:inherit}button{cursor:pointer}
+.app{display:flex;min-height:100vh}
+.sidebar{width:245px;flex-shrink:0;background:#091622;border-right:1px solid var(--line);padding:23px 15px;display:flex;flex-direction:column;gap:23px}
+.brand{display:flex;align-items:center;gap:10px;padding:0 7px}
+.logo{width:45px;height:45px;background:#07111c;border:1px solid #304657;border-radius:14px;display:grid;place-items:center}
+.logo svg{width:35px;height:35px}
+.brand h1{font-size:21px;letter-spacing:4px}.brand small{font-size:8px;letter-spacing:1px;color:var(--muted)}
+.demo{padding:9px;border:1px solid #275247;background:#112c30;color:#7de4c7;border-radius:8px;font-size:10px;text-align:center}
+nav{display:grid;gap:5px}
+nav button{border:0;background:transparent;color:var(--muted);text-align:left;padding:12px;border-radius:9px;display:flex;align-items:center;gap:12px;font-size:12px}
+nav button:hover,nav button.active{background:#173044;color:white}
+nav button.active{border-left:3px solid var(--orange)}
+.nicon{width:20px;text-align:center;font-size:17px}
+.foot{margin-top:auto;color:var(--muted);font-size:10px;line-height:1.8}
+main{padding:27px 30px;flex:1;min-width:0;max-width:1500px;width:100%;margin:auto}
+.page{display:none}.page.active{display:block}
+.top{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:23px}
+.eyebrow{font-size:10px;color:var(--cyan);letter-spacing:2px;text-transform:uppercase}
+h2{font-size:27px;margin-top:6px}h3{font-size:15px}
+.sub{font-size:12px;line-height:1.7;color:var(--muted);margin-top:6px}
+.pill{font-size:10px;border:1px solid var(--line);padding:8px 11px;border-radius:25px;color:var(--muted);white-space:nowrap}
+.grid{display:grid;gap:14px}.stats{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:17px;min-width:0}
+.statline{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);gap:5px}
+.statnum{font-size:30px;font-weight:750;margin:14px 0 5px}.statnote{font-size:10px;color:var(--muted)}
+.two{grid-template-columns:minmax(0,1.3fr) minmax(260px,1fr)}
+.head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px}
+.btn{border:0;border-radius:9px;background:var(--orange);color:#111a22;font-size:11px;font-weight:750;padding:11px 14px}
+.btn.alt{background:transparent;color:var(--text);border:1px solid var(--line)}
+.btn.green{background:#163f39;color:#8ff1d4;border:1px solid #285f52}
+.btn.small{padding:7px 9px;font-size:10px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.field{display:grid;gap:6px;margin-bottom:13px}
+.field label{font-size:11px;color:#c6d5e0}
+.field input,.field select,.field textarea{width:100%;min-width:0;background:#091925;color:var(--text);border:1px solid var(--line);border-radius:8px;padding:11px;outline:none}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--cyan)}
+.field textarea{min-height:75px;resize:vertical}
+.formgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.row{display:flex;align-items:center;gap:11px;padding:12px 0;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:0}
+.avatar{width:38px;height:38px;flex-shrink:0;border-radius:12px;background:#203a4c;color:var(--cyan);display:grid;place-items:center;font-weight:800;font-size:12px}
+.rowinfo{flex:1;min-width:0}.rowinfo b{font-size:12px;display:block}.rowinfo p{font-size:10px;color:var(--muted);margin-top:5px;line-height:1.5}
+.badge{font-size:9px;border-radius:20px;padding:5px 7px;background:#153f38;color:#72e1bf;white-space:nowrap}
+.badge.orange{background:#442b20;color:#ffc08c}.badge.red{background:#462329;color:#ff999e}.badge.blue{background:#1c334d;color:#9dcaff}
+.tabs{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:15px}
+.tabs button{padding:8px 11px;background:transparent;color:var(--muted);border:1px solid var(--line);border-radius:20px;font-size:10px}
+.tabs button.active{background:#173c43;color:var(--cyan);border-color:#286b69}
+.tablewrap{overflow:auto}
+table{border-collapse:collapse;width:100%;min-width:520px}
+th,td{text-align:left;padding:12px 9px;border-bottom:1px solid var(--line);font-size:11px}
+th{color:var(--muted);font-weight:500}td{color:#dce8f1}
+.map{height:280px;position:relative;overflow:hidden;border-radius:12px;background-color:#0b292e;background-image:repeating-linear-gradient(35deg,transparent 0 30px,#20443f 31px 32px,transparent 33px 58px),repeating-linear-gradient(120deg,transparent 0 43px,#173b38 44px 45px,transparent 46px 75px)}
+.map:before,.map:after{content:"";position:absolute;border:1px solid #315e4d;border-radius:45%;width:120%;height:55%;left:-10%;top:20%;transform:rotate(-35deg)}
+.map:after{width:85%;height:65%;left:10%;top:10%;transform:rotate(40deg)}
+.map svg{position:absolute;z-index:1;width:100%;height:100%}
+.mappin{position:absolute;z-index:2;padding:8px;background:#0d2330;border:1px solid #426879;border-radius:8px;font-size:10px}
+.mappin.a{top:15%;left:9%}.mappin.b{top:47%;left:53%}.mappin.c{bottom:10%;left:20%}
+.maplabel{position:absolute;z-index:2;bottom:10px;right:10px;background:#07111ce8;padding:7px;border-radius:7px;font-size:9px;color:#bbd4df}
+.welcome{min-height:75vh;display:grid;place-items:center;text-align:center;background:radial-gradient(ellipse at 50% 45%,#153448,transparent 65%);padding:25px}
+.welcome .mark{width:95px;height:95px;margin:0 auto 20px}
+.welcome h2{font-size:clamp(40px,7vw,66px);letter-spacing:10px}
+.hero{font-size:15px;color:#bbcad8;line-height:1.8;margin:20px auto}
+.heroStats{display:flex;justify-content:center;gap:32px;margin:25px 0;font-size:10px;color:var(--muted)}
+.heroStats b{display:block;color:white;font-size:18px;margin-bottom:4px}
+.toast{display:none;position:fixed;right:20px;bottom:20px;z-index:20;background:#153a32;border:1px solid #347d6e;border-radius:10px;padding:13px 17px;font-size:12px;max-width:90%}
+.notice{padding:11px;background:#172a34;border:1px solid #28404e;border-radius:9px;font-size:10px;color:var(--muted);line-height:1.7;margin-top:12px}
+.membergrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.membercard{background:#0b1b29;border:1px solid var(--line);padding:13px;border-radius:11px}
+.membertop{display:flex;gap:10px;align-items:center}
+.membercard h4{font-size:12px}.membercard p{font-size:10px;color:var(--muted);margin-top:5px;line-height:1.6}
+.membermeta{border-top:1px solid var(--line);margin-top:12px;padding-top:10px;font-size:10px;color:var(--muted);line-height:1.9}
+@media(max-width:950px){.sidebar{width:205px}main{padding:22px 17px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.two{grid-template-columns:1fr}}
+@media(max-width:600px){
+.app{display:block;padding-bottom:67px}.sidebar{position:fixed;z-index:10;bottom:0;left:0;right:0;width:100%;height:64px;padding:4px;border:0;border-top:1px solid var(--line)}
+.brand,.demo,.foot{display:none}nav{display:flex;justify-content:space-around;gap:0}nav button{flex:1;display:flex;flex-direction:column;text-align:center;justify-content:center;gap:2px;padding:6px 1px;font-size:8px}nav button.active{border-left:0;border-top:2px solid var(--orange)}.nicon{font-size:17px}
+main{padding:18px 12px}.top{align-items:flex-start}h2{font-size:22px}.pill{font-size:9px;padding:7px}.card{padding:13px}.stats{gap:9px}.statnum{font-size:25px}.formgrid,.membergrid{grid-template-columns:1fr}.heroStats{gap:19px}.welcome{min-height:70vh}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+<div class="brand">
+<div class="logo">
+<svg viewBox="0 0 50 50" fill="none" aria-label="TRACER rescue navigation logo">
+<path d="M9 31 A19 19 0 1 1 41 31" stroke="#edf5fb" stroke-width="3.5" stroke-linecap="round"/>
+<path d="M13 36 L25 14 L37 36" stroke="#ff792f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M25 14 L25 39" stroke="#edf5fb" stroke-width="2.5"/>
+<path d="M36 5 V17 M30 11 H42" stroke="#ff792f" stroke-width="4" stroke-linecap="round"/>
+</svg>
+</div>
+<div><h1>TRACER</h1><small>RESCUE INTELLIGENCE</small></div>
+</div>
+<div class="demo">● DEMO MODE · SAMPLE RECORDS</div>
+<nav>
+<button class="active" data-page="welcome"><span class="nicon">◈</span>Welcome</button>
+<button data-page="home"><span class="nicon">⌂</span>Dashboard</button>
+<button data-page="peer"><span class="nicon">⇄</span>Peer Network</button>
+<button data-page="teams"><span class="nicon">♧</span>Rescue Teams</button>
+<button data-page="members"><span class="nicon">♙</span>Team Members</button>
+<button data-page="register"><span class="nicon">＋</span>Pilgrim Register</button>
+<button data-page="locate"><span class="nicon">⌖</span>Last Location</button>
+<button data-page="reports"><span class="nicon">▤</span>Missing Reports</button>
+<button data-page="medical"><span class="nicon">✚</span>Medical Help</button>
+</nav>
+<div class="foot">Travel Risk Assessment &amp; Coordination for Emergency Rescue.<br><br>Prototype v2.0 · Offline demo</div>
+</aside>
+<main>
+
+<section class="page active" id="welcome">
+<div class="welcome">
+<div>
+<svg class="mark" viewBox="0 0 100 100" fill="none">
+<circle cx="50" cy="50" r="39" stroke="#dceaf4" stroke-width="3"/>
+<path d="M22 69 L50 20 L78 69" stroke="#ff792f" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M50 20 V76" stroke="#dceaf4" stroke-width="3"/>
+<path d="M70 10 V30 M60 20 H80" stroke="#ff792f" stroke-width="6" stroke-linecap="round"/>
+</svg>
+<div class="eyebrow">TRAVEL SAFETY · RESCUE COORDINATION</div>
+<h2>TRACER</h2>
+<p class="hero">Travel Risk Assessment &amp;<br>Coordination for Emergency Rescue</p>
+<p class="sub">Because every journey matters. And every person counts.</p>
+<div class="heroStats"><div><b>01</b>REGISTER</div><div><b>02</b>VERIFY</div><div><b>03</b>COORDINATE</div></div>
+<button class="btn" onclick="go('home')">Enter Command Centre →</button>
+</div>
+</div>
+</section>
+
+<section class="page" id="home">
+<div class="top"><div><div class="eyebrow">COMMAND CENTRE</div><h2>Rescue Dashboard</h2><p class="sub">One system. Connected people. Coordinated response.</p></div><span class="pill">● DEMO SYSTEM</span></div>
+<div class="grid stats">
+<div class="card"><div class="statline">Missing reports <span>♙</span></div><div class="statnum" id="statReports">12</div><div class="statnote">Includes sample cases</div></div>
+<div class="card"><div class="statline">Peer connections <span>⇄</span></div><div class="statnum" id="statPeers">8</div><div class="statnote">Mock network records</div></div>
+<div class="card"><div class="statline">Rescue teams <span>♧</span></div><div class="statnum" id="statTeams">4</div><div class="statnote">Sample team directory</div></div>
+<div class="card"><div class="statline">Medical requests <span>✚</span></div><div class="statnum" id="statMedical">3</div><div class="statnote">Demo requests</div></div>
+</div>
+<div class="grid two">
+<div class="card"><div class="head"><h3>Recent Case Activity</h3><button class="btn alt small" onclick="go('reports')">All reports →</button></div><div id="recentCases"></div></div>
+<div class="card"><div class="head"><h3>Quick Actions</h3></div><div class="actions">
+<button class="btn" onclick="go('peer')">⇄ Find a Peer</button>
+<button class="btn alt" onclick="go('teams')">♧ View Teams</button>
+<button class="btn alt" onclick="go('register')">＋ Register Pilgrim</button>
+<button class="btn alt" onclick="go('medical')">✚ Medical Help</button>
+</div><div class="notice">TRACER connects registration, peer check-ins, last verified location, checkpoint follow-up and rescue coordination. All displayed data is fictional.</div></div>
+</div>
+</section>
+
+<section class="page" id="peer">
+<div class="top"><div><div class="eyebrow">PEER-TO-PEER NETWORK</div><h2>Peer Connections</h2><p class="sub">Connect journey partners and follow up on missed check-ins.</p></div><span class="pill">P2P · DEMO</span></div>
+<div class="grid stats">
+<div class="card"><div class="statline">Registered peers</div><div class="statnum" id="peerCount">8</div><div class="statnote">Sample participants</div></div>
+<div class="card"><div class="statline">Connected groups</div><div class="statnum">4</div><div class="statnote">Illustrative groups</div></div>
+<div class="card"><div class="statline">Pending check-ins</div><div class="statnum" id="pendingPeers">2</div><div class="statnote">Sample follow-ups</div></div>
+<div class="card"><div class="statline">Peer alerts</div><div class="statnum" id="peerAlerts">1</div><div class="statnote">Needs verification</div></div>
+</div>
+<div class="grid two">
+<div class="card"><div class="head"><h3>Peer Directory</h3><button class="btn small" onclick="go('addpeer')">＋ Add Peer</button></div>
+<div class="field"><input id="peerSearch" placeholder="Search peer name, ID or group..." oninput="renderPeers()"></div>
+<div class="tabs" id="peerTabs"><button class="active" data-filter="All">All</button><button data-filter="Connected">Connected</button><button data-filter="Pending">Pending</button></div>
+<div id="peerList"></div></div>
+<div class="card"><div class="head"><h3>Peer Check-in Workflow</h3></div>
+<div class="row"><div class="avatar">01</div><div class="rowinfo"><b>Register peers</b><p>Assign unique peer IDs and a journey group.</p></div></div>
+<div class="row"><div class="avatar">02</div><div class="rowinfo"><b>Confirm checkpoints</b><p>Record check-ins and the time they were verified.</p></div></div>
+<div class="row"><div class="avatar">03</div><div class="rowinfo"><b>Flag missed check-ins</b><p>Start a follow-up for an unverified checkpoint.</p></div></div>
+<div class="row"><div class="avatar">04</div><div class="rowinfo"><b>Coordinate response</b><p>Share verified details with the assigned team.</p></div></div>
+<div class="notice">Prototype limitation: this is a simulated peer directory. It does not perform real peer discovery, messaging, background GPS tracking or automatic notifications.</div>
+</div></div>
+</section>
+
+<section class="page" id="addpeer">
+<div class="top"><div><div class="eyebrow">PEER NETWORK</div><h2>Register a Peer</h2><p class="sub">Create a fictional participant for this demo session.</p></div></div>
+<div class="card"><form id="peerForm"><div class="grid formgrid">
+<div class="field"><label>Full name *</label><input id="pName" required placeholder="Sample participant"></div>
+<div class="field"><label>Peer ID *</label><input id="pId" required placeholder="PEER-1009"></div>
+<div class="field"><label>Journey group</label><input id="pGroup" placeholder="GROUP-01"></div>
+<div class="field"><label>Contact number</label><input id="pPhone" type="tel" placeholder="Fictional contact"></div>
+<div class="field"><label>Journey checkpoint</label><input id="pCheckpoint" placeholder="Starting checkpoint"></div>
+<div class="field"><label>Check-in status</label><select id="pStatus"><option>Connected</option><option>Pending</option></select></div>
+</div><div class="actions"><button class="btn">Save Peer Record →</button><button class="btn alt" type="button" onclick="go('peer')">Cancel</button></div></form><div class="notice">Use fictional information. Records stay in this page session only.</div></div>
+</section>
+
+<section class="page" id="teams">
+<div class="top"><div><div class="eyebrow">RESPONSE ORGANIZATION</div><h2>Rescue Teams</h2><p class="sub">Team IDs, capabilities, assigned zones and team leads.</p></div><button class="btn" onclick="go('addteam')">＋ Create Team</button></div>
+<div class="field"><input id="teamSearch" placeholder="Search team ID, lead or capability..." oninput="renderTeams()"></div>
+<div class="grid membergrid" id="teamGrid"></div>
+<div class="notice">Team names, IDs, availability and assignments below are fictional examples, not verified emergency service providers.</div>
+</section>
+
+<section class="page" id="addteam">
+<div class="top"><div><div class="eyebrow">TEAM MANAGEMENT</div><h2>Create Rescue Team</h2><p class="sub">Set up a sample team profile and unique team ID.</p></div></div>
+<div class="card"><form id="teamForm"><div class="grid formgrid">
+<div class="field"><label>Team name *</label><input id="tName" required placeholder="North Zone Response"></div>
+<div class="field"><label>Team ID *</label><input id="tId" required placeholder="TEAM-005"></div>
+<div class="field"><label>Team lead *</label><input id="tLead" required placeholder="Fictional lead name"></div>
+<div class="field"><label>Capability</label><select id="tSkill"><option>Medical Response</option><option>Search &amp; Rescue</option><option>Checkpoint Verification</option><option>Logistics &amp; Transport</option><option>Coordination</option></select></div>
+<div class="field"><label>Assigned zone</label><input id="tZone" placeholder="Demo zone"></div>
+<div class="field"><label>Team status</label><select id="tStatus"><option>Available</option><option>Assigned</option><option>Standby</option></select></div>
+</div><div class="actions"><button class="btn">Save Team →</button><button class="btn alt" type="button" onclick="go('teams')">Cancel</button></div></form></div>
+</section>
+
+<section class="page" id="members">
+<div class="top"><div><div class="eyebrow">TEAM ROSTER</div><h2>Team Members</h2><p class="sub">Member IDs, roles, assigned teams and demo availability.</p></div><button class="btn" onclick="go('addmember')">＋ Add Member</button></div>
+<div class="grid stats">
+<div class="card"><div class="statline">Roster members</div><div class="statnum" id="memberCount">8</div><div class="statnote">Sample member records</div></div>
+<div class="card"><div class="statline">Team leads</div><div class="statnum" id="leadCount">4</div><div class="statnote">Sample assignments</div></div>
+<div class="card"><div class="statline">Medical roles</div><div class="statnum" id="medicalRoleCount">2</div><div class="statnote">Illustrative credentials</div></div>
+<div class="card"><div class="statline">Assigned members</div><div class="statnum" id="assignedCount">6</div><div class="statnote">Mock roster status</div></div>
+</div>
+<div class="card"><div class="head"><h3>Member Roster</h3></div>
+<div class="field"><input id="memberSearch" placeholder="Search member ID, role, team ID..." oninput="renderMembers()"></div>
+<div class="tablewrap"><table><thead><tr><th>Member ID</th><th>Name</th><th>Role</th><th>Team ID</th><th>Zone</th><th>Status</th></tr></thead><tbody id="memberRows"></tbody></table></div>
+</div></section>
+
+<section class="page" id="addmember">
+<div class="top"><div><div class="eyebrow">ROSTER MANAGEMENT</div><h2>Add Team Member</h2><p class="sub">Attach a sample member record to a rescue team.</p></div></div>
+<div class="card"><form id="memberForm"><div class="grid formgrid">
+<div class="field"><label>Member full name *</label><input id="mName" required placeholder="Fictional name"></div>
+<div class="field"><label>Member ID *</label><input id="mId" required placeholder="MEM-009"></div>
+<div class="field"><label>Assigned Team ID *</label><select id="mTeam" required></select></div>
+<div class="field"><label>Role *</label><select id="mRole"><option>Team Lead</option><option>Medical Responder</option><option>Search Volunteer</option><option>Checkpoint Officer</option><option>Communications</option><option>Logistics</option></select></div>
+<div class="field"><label>Assigned zone</label><input id="mZone" placeholder="Demo zone"></div>
+<div class="field"><label>Roster status</label><select id="mStatus"><option>Assigned</option><option>Available</option><option>Standby</option></select></div>
+<div class="field"><label>Demo qualification</label><input id="mQual" placeholder="Example: First aid (sample)"></div>
+<div class="field"><label>Contact</label><input id="mContact" placeholder="Fictional contact only"></div>
+</div><div class="actions"><button class="btn">Save Member →</button><button class="btn alt" type="button" onclick="go('members')">Cancel</button></div></form></div>
+</section>
+
+<section class="page" id="register">
+<div class="top"><div><div class="eyebrow">PILGRIM MANAGEMENT</div><h2>Pilgrim Registration</h2><p class="sub">Register a journey record and emergency contact.</p></div></div>
+<div class="card"><form id="registrationForm"><div class="grid formgrid">
+<div class="field"><label>Full name *</label><input id="rName" required placeholder="Fictional pilgrim"></div>
+<div class="field"><label>Pilgrim ID *</label><input id="rId" required placeholder="PIL-1009"></div>
+<div class="field"><label>Age</label><input id="rAge" type="number" min="1" max="120" placeholder="Age"></div>
+<div class="field"><label>Contact</label><input id="rPhone" placeholder="Fictional phone"></div>
+<div class="field"><label>Journey destination *</label><input id="rDestination" required placeholder="Destination"></div>
+<div class="field"><label>Journey group / peer ID</label><input id="rGroup" placeholder="GROUP-01 / PEER-1001"></div>
+<div class="field"><label>Starting checkpoint</label><input id="rCheckpoint" placeholder="Checkpoint"></div>
+<div class="field"><label>Emergency contact</label><input id="rEmergency" placeholder="Fictional emergency contact"></div>
+</div><div class="field"><label>Support notes</label><textarea id="rNotes" placeholder="Optional journey support requirements"></textarea></div>
+<div class="actions"><button class="btn">Save Pilgrim →</button><button class="btn alt" type="reset">Clear</button></div></form></div>
+<div class="card" style="margin-top:14px"><div class="head"><h3>Recent Pilgrim Records</h3></div><div class="tablewrap"><table><thead><tr><th>Pilgrim ID</th><th>Name</th><th>Destination</th><th>Peer / Group</th><th>Checkpoint</th></tr></thead><tbody id="pilgrimRows"></tbody></table></div></div>
+</section>
+
+<section class="page" id="locate">
+<div class="top"><div><div class="eyebrow">LOCATION INTELLIGENCE</div><h2>Last Verified Location</h2><p class="sub">Illustrative route, sample checkpoints and verification records.</p></div><span class="pill">NOT LIVE GPS</span></div>
+<div class="card"><div class="field"><label>Search case, checkpoint or zone</label><input id="locationSearch" placeholder="Search sample records..." oninput="filterLocations()"></div>
+<div class="map">
+<svg viewBox="0 0 500 300" preserveAspectRatio="none"><path d="M80 45 C230 70 110 140 275 145 S220 220 390 255" stroke="#43d9cb" stroke-width="3" fill="none" stroke-dasharray="7 6"/><circle cx="80" cy="45" r="6" fill="#ff792f"/><circle cx="275" cy="145" r="6" fill="#43d9cb"/><circle cx="390" cy="255" r="6" fill="#4b9dff"/></svg>
+<div class="mappin a">● Last verified<span style="display:block;color:var(--cyan);margin-top:4px">Sample zone A</span></div>
+<div class="mappin b">⚑ Checkpoint 03</div>
+<div class="mappin c">✚ Medical centre</div>
+<div class="maplabel">Illustrative terrain · No live coordinates</div>
+</div>
+<p class="sub">A real deployment needs consent-based location collection, timestamped verification, secure storage and verified mapping integrations.</p></div>
+<div class="card" style="margin-top:14px"><div class="head"><h3>Checkpoint Verification</h3><button class="btn small" onclick="go('checkpoints')">＋ Record Check-in</button></div>
+<div class="tablewrap"><table><thead><tr><th>Checkpoint ID</th><th>Zone</th><th>Last verification</th><th>Status</th></tr></thead><tbody id="checkpointRows"></tbody></table></div></div>
+</section>
+
+<section class="page" id="checkpoints">
+<div class="top"><div><div class="eyebrow">JOURNEY VERIFICATION</div><h2>Record Checkpoint</h2><p class="sub">Create a mock check-in or flag a missed verification.</p></div></div>
+<div class="card"><form id="checkpointForm"><div class="grid formgrid">
+<div class="field"><label>Person / Peer ID *</label><input id="cPerson" required placeholder="PEER-1001 / PIL-1001"></div>
+<div class="field"><label>Checkpoint ID *</label><input id="cId" required placeholder="CP-04"></div>
+<div class="field"><label>Zone</label><input id="cZone" placeholder="Demo zone"></div>
+<div class="field"><label>Verification status</label><select id="cStatus"><option>Verified</option><option>Pending follow-up</option><option>Missed check-in</option></select></div>
+</div><div class="field"><label>Notes</label><textarea id="cNotes" placeholder="Sample verification notes"></textarea></div><button class="btn">Save Checkpoint Record →</button></form></div></section>
+
+<section class="page" id="reports">
+<div class="top"><div><div class="eyebrow">CASE MANAGEMENT</div><h2>Missing-Person Reports</h2><p class="sub">Review sample cases and assigned rescue teams.</p></div><button class="btn" onclick="go('newreport')">＋ New Report</button></div>
+<div class="card"><div class="field"><label>Search reports</label><input id="reportSearch" placeholder="Search ID, name, zone..." oninput="renderReports()"></div>
+<div class="tablewrap"><table><thead><tr><th>Case ID</th><th>Person</th><th>Last verified</th><th>Priority</th><th>Assigned Team</th><th>Status</th></tr></thead><tbody id="reportRows"></tbody></table></div></div>
+</section>
+
+<section class="page" id="newreport">
+<div class="top"><div><div class="eyebrow">CASE INTAKE</div><h2>New Missing-Person Report</h2><p class="sub">Enter fictional details for a demonstration case.</p></div></div>
+<div class="card"><form id="reportForm"><div class="grid formgrid">
+<div class="field"><label>Person name *</label><input id="caseName" required placeholder="Sample person"></div>
+<div class="field"><label>Case ID *</label><input id="caseId" required placeholder="CASE-1009"></div>
+<div class="field"><label>Last verified checkpoint *</label><input id="caseCheckpoint" required placeholder="Checkpoint / zone"></div>
+<div class="field"><label>Priority</label><select id="casePriority"><option>High</option><option>Medium</option><option>Low</option></select></div>
+<div class="field"><label>Assigned team</label><select id="caseTeam"></select></div>
+<div class="field"><label>Case status</label><select id="caseStatus"><option>New report</option><option>Follow-up required</option><option>Under review</option></select></div>
+</div><div class="field"><label>Case details</label><textarea id="caseDetails" placeholder="Fictional observations"></textarea></div><button class="btn">Save Demo Case →</button></form></div>
+</section>
+
+<section class="page" id="medical">
+<div class="top"><div><div class="eyebrow">MEDICAL COORDINATION</div><h2>Medical Help Centre</h2><p class="sub">Sample assistance requests and referral directory.</p></div></div>
+<div class="grid two">
+<div class="card"><div class="head"><h3>Create Assistance Request</h3></div><form id="medicalForm">
+<div class="field"><label>Request ID *</label><input id="hId" required placeholder="MED-1009"></div>
+<div class="field"><label>Person / Case ID *</label><input id="hPerson" required placeholder="PIL-1001 / CASE-1001"></div>
+<div class="field"><label>Support needed</label><select id="hType"><option>First aid</option><option>Medical assessment</option><option>Mobility assistance</option><option>Transport coordination</option><option>Other support</option></select></div>
+<div class="field"><label>Location / checkpoint *</label><input id="hLocation" required placeholder="Known demo area"></div>
+<div class="field"><label>Urgency</label><select id="hUrgency"><option>Urgent</option><option>Routine</option></select></div>
+<div class="field"><label>Assigned Team ID</label><select id="hTeam"></select></div>
+<div class="field"><label>Notes</label><textarea id="hNotes" placeholder="Sample request details"></textarea></div><button class="btn">Save Demo Request →</button></form></div>
+<div class="card"><div class="head"><h3>Help Centre Directory</h3></div>
+<div class="row"><div class="avatar">✚</div><div class="rowinfo"><b>Primary Medical Centre</b><p>DEMO-MED-01 · Sample zone A</p></div><span class="badge">Demo</span></div>
+<div class="row"><div class="avatar">＋</div><div class="rowinfo"><b>First Aid Point</b><p>DEMO-MED-02 · Sample zone B</p></div><span class="badge">Demo</span></div>
+<div class="row"><div class="avatar">⌖</div><div class="rowinfo"><b>Rescue Coordination Desk</b><p>DEMO-RCC-01 · Sample zone C</p></div><span class="badge">Demo</span></div>
+<div class="notice">These are not real facilities. Actual availability, addresses, staff credentials and emergency contact routes must be verified before deployment.</div>
+</div></div>
+<div class="card" style="margin-top:14px"><div class="head"><h3>Assistance Requests</h3></div><div id="medicalList"></div></div>
+</section>
+</main>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
